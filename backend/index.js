@@ -7,7 +7,7 @@ const alcoholimetroRoutes = require('./routers/alcoholimetro');
 const verifyToken = require('./middlewares/authMiddleware');
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3000;
 
 const cors = require('cors');
 app.use(cors());

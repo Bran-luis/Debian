@@ -2,56 +2,77 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const verifyToken = require('../middlewares/authMiddleware');
 const User = require('../models/usuario');
 const router = express.Router();
 
-//crear un nuevo usuario con validación
+// Crear un nuevo usuario con validación
 router.post('/register', [
-  // Validaciones
-  body('username')
-    .isLength({ min: 3 })
-    .withMessage('El nombre de usuario debe tener al menos 3 caracteres')
-    .not()
-    .isEmpty()
-    .withMessage('El nombre de usuario no puede estar vacío'),
-  body('password')
-    .isLength({ min: 6 })
-    .withMessage('La contraseña debe tener al menos 6 caracteres')
+  body('username').isLength({ min: 3 }).withMessage('El nombre de usuario debe tener al menos 3 caracteres'),
+  body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
+  body('role').isIn(['admin', 'employee']).withMessage('El rol no es válido'),
+  // Aquí puedes agregar la validación para area_id si es relevante
+  // body('area_id').optional().isInt().withMessage('El ID de área debe ser un número entero')
 ], async (req, res) => {
-  // Validar los resultados de las validaciones
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { username, password } = req.body;
+  const { username, password, role, area_id } = req.body;
+
+  console.log(`Creando usuario con el rol: ${role}`); // Agrega esta línea para depuración
 
   try {
-    // Verificar si el usuario existe
     const existingUser = await User.findOne({ where: { username } });
     if (existingUser) {
       return res.status(400).json({ error: 'El nombre de usuario ya está en uso' });
     }
 
-    // Crear el nuevo usuario con la contraseña en texto claro
-    const newUser = await User.create({ username, password });
+    // Crea el nuevo usuario sin hashear la contraseña
+    const newUser = await User.create({
+      username,
+      password, // Contraseña en texto plano
+      role,
+      area_id // Incluye area_id si es necesario
+    });
 
-    // Generar el token JWT
-    const token = jwt.sign({ id: newUser.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: newUser.id, role: newUser.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    res.status(201).json({ message: 'Usuario creado exitosamente', token });
+    res.status(201).json({ message: 'Usuario creado exitosamente', token, role: newUser.role });
   } catch (error) {
-    console.error('Error al crear el usuario:', error);
+    console.error('Error al crear usuario:', error); // Mejora la depuración
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
 
+const verifyRole = (roles) => {
+  return (req, res, next) => {
+    const { role } = req.user; // req.user viene del middleware de autenticación JWT
 
-//obtener todos los usuarios
+    if (!roles.includes(role)) {
+      return res.status(403).json({ error: 'No tienes permiso para acceder a esta ruta' });
+    }
+
+    next();
+  };
+};
+
+// Ruta accesible solo para administradores
+router.get('/admin/dashboard', verifyToken, verifyRole(['admin']), (req, res) => {
+  res.json({ message: 'Bienvenido al panel de administrador' });
+});
+
+// Ruta accesible tanto para empleados como para administradores
+router.get('/dashboard', verifyToken, verifyRole(['admin', 'employee']), (req, res) => {
+  res.json({ message: 'Bienvenido al panel de empleados' });
+});
+
+// Obtener todos los usuarios
 router.get('/users', async (req, res) => {
   try {
     const users = await User.findAll({
-      attributes: ['id', 'username']
+      attributes: ['id', 'username', 'role', 'area_id'] // Incluye 'area_id'
     });
     res.json(users);
   } catch (err) {
@@ -59,6 +80,7 @@ router.get('/users', async (req, res) => {
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
+
 
 //eliminar un usuario por ID
 router.delete('/users/:id', async (req, res) => {
@@ -95,30 +117,22 @@ router.get('/users/:id', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  console.log('Datos recibidos en el backend:', req.body);
-
   const { username, password } = req.body;
 
   try {
-    // Verificar si el usuario existe
-    const existingUser = await User.findOne({ where: { username } });
-    
-    if (!existingUser) {
-      return res.status(404).json({ error: 'Usuario no encontrado' });
-    }
+    const user = await User.findOne({ where: { username } });
 
-    
+    if (!user) return res.status(400).json({ error: 'Usuario no encontrado' });
 
-    // Generar el token JWT y añadir el rol al payload
-    const token = jwt.sign({ id: existingUser.id, rol: existingUser.rol }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // Comparar la contraseña proporcionada directamente
+    if (user.password !== password) return res.status(400).json({ error: 'Contraseña incorrecta' });
 
-    // Enviar el token y el rol del usuario al frontend
-    res.status(200).json({ message: 'Inicio de sesión exitoso', token, user: { username: existingUser.username, rol: existingUser.rol } });
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.json({ token, role: user.role });
   } catch (error) {
-    console.error('Error en el inicio de sesión:', error);
     res.status(500).json({ error: 'Error del servidor' });
   }
 });
-
 
 module.exports = router;
