@@ -1,7 +1,8 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const sequelize = require('../config/database');
-const bcrypt = require('bcrypt');
+const { DataTypes } = require('sequelize');
+const sequelize = require('../config/database'); 
+const bcrypt = require('bcryptjs');
 
+// Definición del modelo de Empleados
 const User = sequelize.define('User', {
   username: {
     type: DataTypes.STRING,
@@ -13,29 +14,43 @@ const User = sequelize.define('User', {
     allowNull: false
   },
   role: {
+    type: DataTypes.ENUM('admin', 'employee'),
+    allowNull: false,
+    defaultValue: 'employee'
+  },
+  area: {
+    type: DataTypes.ENUM('Informatica', 'Contabilidad', 'Administración'),
+    allowNull: false,
+    defaultValue: 'Informatica'
+  },
+  codigoNfc: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue: 'employee'  // Por defecto es empleado
-  },
-  area_id: {
-    type: DataTypes.INTEGER,
-    allowNull: true, // Si quieres que sea opcional
-    references: {
-      model: 'areas',
-      key: 'id'
-    }
+    unique: true
   }
 }, {
-  tableName: 'empleados', // Asegúrate de que el nombre de la tabla es correcto
+  tableName: 'empleados',
   timestamps: false,
+  hooks: {
+    
+    beforeCreate: async (user) => {
+      if (user.codigoNfc) {
+        const salt = await bcrypt.genSalt(10);
+        user.codigoNfc = await bcrypt.hash(user.codigoNfc, salt);
+      }
+    },
+    beforeUpdate: async (user) => {
+      if (user.codigoNfc && user.changed('codigoNfc')) {
+        const salt = await bcrypt.genSalt(10);
+        user.codigoNfc = await bcrypt.hash(user.codigoNfc, salt);
+      }
+    }
+  }
 });
 
-// Hashea la contraseña antes de guardar el usuario
-// User.beforeCreate(async (user) => {
-//   if (user.changed('password')) {
-//     const salt = await bcrypt.genSalt(10);
-//     user.password = await bcrypt.hash(user.password, salt);
-//   }
-// });
+
+User.prototype.validarCodigoNfc = async function(codigoNfc) {
+  return await bcrypt.compare(codigoNfc, this.codigoNfc);
+};
 
 module.exports = User;

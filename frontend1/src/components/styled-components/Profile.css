@@ -1,0 +1,376 @@
+/* Estilos generales del contenedor */
+.admin-dashboard {
+  display: flex;
+  height: 100vh;
+  font-family: Arial, sans-serif;
+}
+
+/* Barra de navegación lateral */
+.sidebar {
+  width: 15%;
+  background-color: #333;
+  color: white;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.sidebar ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar ul li {
+  padding: 15px;
+  cursor: pointer;
+  color: white;
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid #555;
+}
+
+.sidebar ul li:hover {
+  background-color: #444;
+}
+
+/* Contenedor principal */
+.main-content {
+  width: 85%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  color: #4a4a4a;
+}
+
+/* Estilo del contenedor de lista de usuarios */
+.user-list-container, .assistance-list-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.user-list-container table, .assistance-list-container table {
+  width: 100%;
+  max-width: 800px;
+  margin: 20px 0;
+  border-collapse: collapse;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.user-list-container th,
+.user-list-container td, .assistance-list-container th, .assistance-list-container td {
+  border: 1px solid #ccc;
+  padding: 12px 8px;
+  text-align: center;
+}
+
+.user-list-container th, .assistance-list-container th {
+  background-color: #f2f2f2;
+}
+
+/* Botones de filtro */
+.filter-buttons {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.filter-buttons button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 0 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-buttons button:hover {
+  background-color: #800080;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Estilo de la tabla de usuarios */
+.user-list-container th,
+.user-list-container td, .assistance-list-container th, .assistance-list-container td {
+  text-align: left;
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+}
+
+.user-list-container th, .assistance-list-container table th {
+  background-color: #4a90e2;
+  color: white;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.user-list-container td , .assistance-list-container td{
+  background-color: #f9f9f9;
+}
+
+/* Estilo de botones de acción */
+.edit-button,
+.delete-button {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin: 0 5px;
+  transition: background-color 0.3s ease;
+}
+
+.edit-button:hover {
+  background-color: #357abd;
+}
+
+.delete-button:hover {
+  background-color: #e74c3c;
+}
+
+/* Estilo del formulario de agregar/editar usuario */
+.add-user-container {
+  background-color: #fff;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.add-user-container h3 {
+  margin-bottom: 20px;
+  color: #4a90e2;
+}
+
+.add-user-container form {
+  width: 100%;
+}
+
+.add-user-container form label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #333;
+}
+
+.add-user-container form input,
+.add-user-container form select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.add-user-container form button {
+  background-color: #4a90e2;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.add-user-container form button:hover {
+  background-color: #357abd;
+}
+
+/* Botón de agregar usuario */
+.add-user-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  display: block; 
+  margin: 20px auto; 
+  text-align: center;
+  width: fit-content; 
+}
+
+.add-user-button:hover {
+  background-color: #388e3c;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo del botón de cerrar sesión */
+.logout-button {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 20px;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #c0392b;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+  }
+
+  .main-content {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .user-list-container table {
+    font-size: 0.9rem;
+  }
+}
+
+/* Estilos para el modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.close-button {
+  align-self: flex-end;
+  font-size: 24px;
+  cursor: pointer;
+  color: #aaa;
+  margin-bottom: 20px;
+}
+
+.close-button:hover {
+  color: #000;
+}
+
+/* Ajuste de formulario dentro del modal */
+.modal-content form {
+  width: 100%;
+}
+
+.modal-content form label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1rem;
+}
+
+.modal-content form input,
+.modal-content form select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-sizing: border-box;
+}
+
+.modal-content form button {
+  background-color: #4a90e2;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.modal-content form button:hover {
+  background-color: #357abd;
+}
+
+/* Estilo para el botón de cierre dentro del modal */
+.modal .close-button {
+  position: absolute; 
+  top: 10px;
+  right: 15px;
+  font-size: 24px;
+  cursor: pointer;
+  color: #aaa;
+  font-weight: bold;
+  background: none; 
+  border: none; 
+}
+
+.modal .close-button:hover {
+  color: #000; 
+}
+
+/* Estilo para el modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6); 
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; 
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%;
+  max-width: 500px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative; 
+}
