@@ -184,3 +184,5 @@ router.get('/users/nfc/:codigoNfc', async (req, res) => {
 });
 
 module.exports = router;
+
+
