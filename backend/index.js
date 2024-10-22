@@ -2,10 +2,10 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const sequelize = require('./config/database'); // Configuración de Sequelize
-const authRoutes = require('./routers/auth'); // Importación de rutas de autenticación
-const asistenciasRouters = require('./routers/asistencias'); // Importación de rutas de asistencias
-const verifyToken = require('./middlewares/authMiddleware'); // Middleware para verificar el token
+const sequelize = require('./config/database'); 
+const authRoutes = require('./routers/auth'); 
+const asistenciasRouters = require('./routers/asistencias');
+const verifyToken = require('./middlewares/authMiddleware');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -28,8 +28,8 @@ app.use((req, res, next) => {
 });
 
 // Registro de rutas
-app.use('/api/auth', authRoutes); // Ruta de autenticación
-app.use('/api/asistencias', asistenciasRouters); // Ruta para asistencias
+app.use('/api/auth', authRoutes); 
+app.use('/api/asistencias', asistenciasRouters);
 
 // Sincronización de la base de datos
 sequelize.sync()
@@ -47,6 +47,6 @@ app.use((err, req, res, next) => {
 });
 
 // Iniciación del servidor
-app.listen(port, () => {
+app.listen(port, '0.0.0.0', () => {
   console.log(`Servidor corriendo en el puerto ${port}`);
 });
