@@ -16,7 +16,7 @@ const verifyToken = (req, res, next) => {
 
 const verifyRole = (roles) => {
   return (req, res, next) => {
-    const { role } = req.user; // req.user viene del middleware de autenticación JWT
+    const { role } = req.user;
 
     console.log(`Rol del usuario: ${role}`);
     console.log(`Roles permitidos: ${roles}`);

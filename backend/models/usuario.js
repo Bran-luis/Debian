@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); 
+const sequelize = require('../config/database');
 const bcrypt = require('bcryptjs');
 
 // Definición del modelo de Empleados
@@ -8,6 +8,13 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true
+  },
+  correo: {
+    type: DataTypes.STRING,
+    allowNull: false, 
+    validate: {
+      isEmail: true
+    }
   },
   password: {
     type: DataTypes.STRING,
@@ -18,7 +25,7 @@ const User = sequelize.define('User', {
     allowNull: false,
     defaultValue: 'employee'
   },
-  area: {
+  area_id: {
     type: DataTypes.ENUM('Informatica', 'Contabilidad', 'Administración'),
     allowNull: false,
     defaultValue: 'Informatica'
@@ -30,24 +37,8 @@ const User = sequelize.define('User', {
   }
 }, {
   tableName: 'empleados',
-  timestamps: false,
-  hooks: {
-    
-    beforeCreate: async (user) => {
-      if (user.codigoNfc) {
-        const salt = await bcrypt.genSalt(10);
-        user.codigoNfc = await bcrypt.hash(user.codigoNfc, salt);
-      }
-    },
-    beforeUpdate: async (user) => {
-      if (user.codigoNfc && user.changed('codigoNfc')) {
-        const salt = await bcrypt.genSalt(10);
-        user.codigoNfc = await bcrypt.hash(user.codigoNfc, salt);
-      }
-    }
-  }
+  timestamps: false
 });
-
 
 User.prototype.validarCodigoNfc = async function(codigoNfc) {
   return await bcrypt.compare(codigoNfc, this.codigoNfc);

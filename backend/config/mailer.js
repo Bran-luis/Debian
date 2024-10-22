@@ -1,33 +1,34 @@
+require('dotenv').config();
 
 const nodemailer = require('nodemailer');
-require('dotenv').config();
 
 // Configuración del transporter
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST, 
-  port: process.env.SMTP_PORT, 
-  secure: process.env.SMTP_SECURE === 'true', 
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: process.env.SMTP_SECURE === 'true',
   auth: {
-    user: process.env.SMTP_USER, 
-    pass: process.env.SMTP_PASS  
-  }
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
 });
 
-// Función para enviar correos
 const sendEmail = async (to, subject, text) => {
-  const mailOptions = {
-    from: process.env.SMTP_USER, 
-    to,                            
-    subject,                       
-    text,                          
-  };
-
-  try {
-    const info = await transporter.sendMail(mailOptions);
-    console.log('Correo enviado:', info.messageId);
-  } catch (error) {
-    console.error('Error al enviar el correo:', error);
-  }
-};
+    try {
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: to,
+            subject: subject,
+            text: text,
+        });
+        console.log('Correo enviado exitosamente.');
+    } catch (error) {
+        console.error('Error al enviar el correo:', error);
+        if (error.response) {
+            console.error('Respuesta del servidor:', error.response);
+        }
+        throw error;
+    }
+}; 
 
 module.exports = { sendEmail };

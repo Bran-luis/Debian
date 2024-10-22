@@ -1,5 +1,5 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database'); 
+const sequelize = require('../config/database');
 const User = require('./usuario'); 
 
 // Definición del modelo de AsistenciaEmpleados
@@ -7,7 +7,7 @@ const AsistenciaEmpleados = sequelize.define('AsistenciaEmpleados', {
   empleado_id: {
     type: DataTypes.INTEGER,
     references: {
-      model: User, // Referencia al modelo de usuario (modelo importado)
+      model: User, 
       key: 'id',
     },
   },
@@ -21,14 +21,14 @@ const AsistenciaEmpleados = sequelize.define('AsistenciaEmpleados', {
   },
   nivelAlcohol: {
     type: DataTypes.DECIMAL(5, 2),
-    allowNull: true, // Permite valores nulos Revisar esto
+    allowNull: true, 
   },
 }, {
   tableName: 'asistenciasempleados',
   timestamps: false,
 });
 
-// Definir la relación entre las tablas (User y AsistenciaEmpleados)
+
 User.hasMany(AsistenciaEmpleados, { foreignKey: 'empleado_id' });
 AsistenciaEmpleados.belongsTo(User, { foreignKey: 'empleado_id' });
 

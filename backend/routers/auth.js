@@ -3,15 +3,17 @@ const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const verifyToken = require('../middlewares/authMiddleware');
+const Bitacora = require('../models/Bitacora');
 const User = require('../models/usuario');
 const router = express.Router();
 
 // Crear un nuevo usuario con validación
 router.post('/register', [
   body('username').isLength({ min: 3 }).withMessage('El nombre de usuario debe tener al menos 3 caracteres'),
+  body('correo').notEmpty().withMessage('El correo debe de ser valido'),
   body('password').isLength({ min: 6 }).withMessage('La contraseña debe tener al menos 6 caracteres'),
   body('role').isIn(['admin', 'employee']).withMessage('El rol no es válido'),
-  body('area').isIn(['Informatica', 'Contabilidad', 'Administración']).withMessage('Area no asignada'),
+  body('area_id').isIn(['Informatica', 'Contabilidad', 'Administración']).withMessage('Area no asignada'),
   body('codigoNfc').notEmpty().withMessage('El código NFC es obligatorio') 
 ], async (req, res) => {
   const errors = validationResult(req);
@@ -19,7 +21,7 @@ router.post('/register', [
     return res.status(400).json({ errors: errors.array() });
   }
 
-  const { username, password, role, area, codigoNfc } = req.body; 
+  const { username, correo, password, role, area_id, codigoNfc } = req.body; 
 
   console.log(`Creando usuario con el rol: ${role}, y código NFC: ${codigoNfc}`); 
 
@@ -29,16 +31,16 @@ router.post('/register', [
       return res.status(400).json({ error: 'El nombre de usuario ya está en uso' });
     }
 
-    // Crea el nuevo usuario incluyendo el codigoNfc
     const newUser = await User.create({
       username,
+      correo,
       password, 
       role,
-      area,
+      area_id,
       codigoNfc 
     });
 
-    const token = jwt.sign({ id: newUser.id, role: newUser.role, area: newUser.area }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ id: newUser.id, correo: newUser.correo, role: newUser.role, area_id: newUser.area_id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     res.status(201).json({ message: 'Usuario creado exitosamente', token, role: newUser.role });
   } catch (error) {
@@ -74,7 +76,7 @@ router.get('/dashboard', verifyToken, verifyRole(['admin', 'employee']), (req, r
 router.get('/users', async (req, res) => {
   try {
     const users = await User.findAll({
-      attributes: ['id', 'username', 'role', 'area', 'codigoNfc'] 
+      attributes: ['id', 'username', 'correo','role', 'area_id', 'codigoNfc'] 
     });
     res.json(users);
   } catch (err) {
@@ -145,11 +147,11 @@ router.post('/login', async (req, res) => {
 router.put('/users/:id', async (req, res) => {
   try {
     const userId = req.params.id;
-    const { username, password, role, area, codigoNfc } = req.body; 
+    const { username, correo, password, role, area_id, codigoNfc } = req.body; 
 
     // Encuentra al usuario y actualiza sus datos, incluido el código NFC
     const updatedUser = await User.update(
-      { username, password, role, area, codigoNfc },  
+      { username, correo, password, role, area_id, codigoNfc },  
       { where: { id: userId } }
     );
 
@@ -184,5 +186,3 @@ router.get('/users/nfc/:codigoNfc', async (req, res) => {
 });
 
 module.exports = router;
-
-
